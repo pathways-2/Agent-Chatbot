@@ -1,0 +1,27 @@
+{
+  "name": "hr-chatbot-backend",
+  "version": "1.0.0",
+  "description": "Backend for HR chatbot with OpenAI Agent SDK",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "openai": "^4.20.1",
+    "csv-parser": "^3.0.0",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "axios": "^1.6.0",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "express-validator": "^7.0.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+} 
