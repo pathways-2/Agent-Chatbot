@@ -4,8 +4,11 @@ class PolicySearchTool {
   constructor() {
     this.name = 'policy_search';
     this.description = 'Searches HR policies and procedures using vector search for relevant information';
-    this.vectorizeApiKey = process.env.VECTORIZE_API_KEY;
-    this.vectorizeEndpoint = process.env.VECTORIZE_ENDPOINT;
+    
+    // Use proper vectorize.io configuration format
+    this.vectorizePipelineAccessToken = process.env.VECTORIZE_PIPELINE_ACCESS_TOKEN;
+    this.vectorizeOrganizationId = process.env.VECTORIZE_ORGANIZATION_ID;
+    this.vectorizePipelineId = process.env.VECTORIZE_PIPELINE_ID;
     this.indexName = process.env.VECTORIZE_INDEX_NAME || 'hr-policies';
     
     // Mock policy data for demonstration (replace with actual vectorize.io integration)
@@ -78,9 +81,10 @@ class PolicySearchTool {
       let results;
       
       // Try vectorize.io first if configured
-      if (this.vectorizeApiKey && this.vectorizeEndpoint) {
+      if (this.vectorizePipelineAccessToken && this.vectorizeOrganizationId && this.vectorizePipelineId) {
         try {
           results = await this.searchVectorize(query, section, limit);
+          console.log('✅ Vectorize.io search successful! Results:', results.length);
         } catch (error) {
           console.warn('Vectorize.io search failed, falling back to mock data:', error.message);
           results = this.searchMockPolicies(query, section, limit);
@@ -113,11 +117,12 @@ class PolicySearchTool {
 
   // Search using vectorize.io (when properly configured)
   async searchVectorize(query, section, limit) {
+    // Use path-based endpoint structure
+    const endpoint = `https://api.vectorize.io/v1/org/${this.vectorizeOrganizationId}/pipelines/${this.vectorizePipelineId}/retrieval`;
+    
     const searchPayload = {
-      query: query,
-      index: this.indexName,
-      limit: limit,
-      include_metadata: true
+      question: query,
+      numResults: limit
     };
 
     if (section) {
@@ -127,25 +132,33 @@ class PolicySearchTool {
     }
 
     const response = await axios.post(
-      `${this.vectorizeEndpoint}/search`,
+      endpoint,
       searchPayload,
       {
         headers: {
-          'Authorization': `Bearer ${this.vectorizeApiKey}`,
+          'Authorization': `Bearer ${this.vectorizePipelineAccessToken}`,
           'Content-Type': 'application/json'
         }
       }
     );
 
-    return response.data.results.map(result => ({
-      id: result.id,
-      title: result.metadata.title,
-      section: result.metadata.section,
-      content: result.metadata.content,
-      relevance_score: result.score,
-      last_updated: result.metadata.last_updated,
-      effective_date: result.metadata.effective_date
+    // DEBUG: Log what we're actually getting from vectorize.io
+    console.log('🔍 DEBUG: Vectorize.io Response:', JSON.stringify(response.data, null, 2));
+    
+    const mappedResults = response.data.documents.map(doc => ({
+      id: doc.id,
+      title: doc.source_display_name || 'HR Policy Document',
+      section: 'Policy Manual',
+      content: doc.text,
+      relevance_score: doc.similarity,
+      last_updated: '2025-01-01',
+      effective_date: '2025-01-01'
     }));
+
+    // DEBUG: Log the processed results
+    console.log('📋 DEBUG: Processed Results for AI:', JSON.stringify(mappedResults, null, 2));
+    
+    return mappedResults;
   }
 
   // Mock policy search for demonstration

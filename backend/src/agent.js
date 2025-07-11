@@ -288,7 +288,7 @@ You represent TechCorp's HR department, so maintain high standards of profession
         policy_search: this.policySearchTool ? 'available' : 'unavailable'
       },
       openai_configured: !!process.env.OPENAI_API_KEY,
-      vectorize_configured: !!(process.env.VECTORIZE_API_KEY && process.env.VECTORIZE_ENDPOINT)
+      vectorize_configured: !!(process.env.VECTORIZE_PIPELINE_ACCESS_TOKEN && process.env.VECTORIZE_ORGANIZATION_ID && process.env.VECTORIZE_PIPELINE_ID)
     };
   }
 
