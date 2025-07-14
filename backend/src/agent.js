@@ -39,6 +39,14 @@ Available tools:
 - calculator: Perform mathematical calculations including vacation day calculations
 - policy_search: Search HR policies and procedures
 
+Calculator Tool Usage Guidelines:
+- For questions about "working days in [month] [year]", use type: 'monthly_working_days' with context: { month: [1-12], year: [YYYY] }
+- For vacation calculations, use type: 'vacation_calculation' 
+- For percentage calculations, use type: 'percentage'
+- For prorated calculations, use type: 'prorated_calculation'
+- For time-related calculations, use type: 'time_calculation'
+- For simple math expressions, use type: 'general'
+
 Remember to:
 - Use tools when appropriate to provide accurate information
 - Format responses in a clear, professional manner

@@ -12,6 +12,7 @@ An intelligent HR assistant that autonomously orchestrates multiple tools to ans
 - **🔍 RAG-Powered Search**: Real-time semantic search through HR policies using vector embeddings
 - **📊 Dynamic Data Access**: Live database/CSV reading with real-time employee information retrieval  
 - **🧠 Multi-Modal Integration**: Seamlessly combines policy documents, employee records, and calculations
+- **📅 Working Days Calculator**: Accurate monthly working days calculations for any month/year
 - **🛡️ Enterprise Security**: 12+ guardrail types protecting sensitive information
 - **💬 Conversational Memory**: Context-aware interactions with persistent session management
 
@@ -111,9 +112,10 @@ An intelligent HR assistant that autonomously orchestrates multiple tools to ans
 - **Comprehensive Coverage**: Remote work, benefits, performance reviews, time off, compliance policies
 
 #### 3. 🧮 Calculator Tool
-- HR-specific calculations: vacation days, overtime, benefits
-- Input sanitization prevents code injection
-- Natural language processing for math queries
+- **HR-specific calculations**: vacation days, overtime, benefits, monthly working days
+- **Monthly Working Days**: Accurate calculation of working days for any month/year
+- **Input sanitization**: Prevents code injection
+- **Natural language processing**: Handles math queries in conversational format
 
 ### 🧠 Memory & Context Management
 - **Session-Based Storage**: Unique context per conversation
@@ -185,6 +187,9 @@ An intelligent HR assistant that autonomously orchestrates multiple tools to ans
 "Calculate John's remaining vacation days if he takes 5"
 "What's 40 hours times 1.5 for overtime?"
 "How many working days between March 1-15?"
+"How many working days in August 2025?"
+"Working days in December 2024"
+"Calculate working days for July 2025"
 ```
 
 ### Guardrail Testing

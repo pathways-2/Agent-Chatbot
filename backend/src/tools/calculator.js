@@ -8,7 +8,7 @@ class CalculatorTool {
     try {
       const { expression, type = 'general', context = {} } = params;
       
-      if (!expression) {
+      if (!expression && type !== 'monthly_working_days') {
         throw new Error('Expression parameter is required');
       }
 
@@ -39,6 +39,11 @@ class CalculatorTool {
         case 'time_calculation':
           result = this.calculateTime(context);
           explanation = this.getTimeExplanation(result);
+          break;
+          
+        case 'monthly_working_days':
+          result = this.calculateMonthlyWorkingDaysResult(context);
+          explanation = this.getMonthlyWorkingDaysExplanation(result);
           break;
           
         default:
@@ -212,6 +217,46 @@ class CalculatorTool {
     return workingDays;
   }
 
+  // Calculate working days for a specific month and year
+  calculateMonthlyWorkingDays(month, year) {
+    // Create start date (first day of month)
+    const startDate = new Date(year, month - 1, 1);
+    // Create end date (last day of month)
+    const endDate = new Date(year, month, 0);
+    
+    let workingDays = 0;
+
+    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+      const dayOfWeek = date.getDay();
+      // Monday = 1, Friday = 5 (weekends are 0=Sunday, 6=Saturday)
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        workingDays++;
+      }
+    }
+
+    return workingDays;
+  }
+
+  // Calculate monthly working days result object
+  calculateMonthlyWorkingDaysResult(context) {
+    const { month, year } = context;
+    
+    if (!month || !year) {
+      throw new Error('Month and year are required for monthly working days calculation');
+    }
+
+    const workingDays = this.calculateMonthlyWorkingDays(month, year);
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    return {
+      month: month,
+      year: year,
+      monthName: monthNames[month - 1],
+      workingDays: workingDays
+    };
+  }
+
   // Calculate total days between two dates
   calculateDaysBetween(startDate, endDate) {
     const start = new Date(startDate);
@@ -285,6 +330,10 @@ class CalculatorTool {
     return explanation.trim();
   }
 
+  getMonthlyWorkingDaysExplanation(result) {
+    return `In ${result.monthName} ${result.year}, there are ${result.workingDays} working days. This calculation assumes that weekends (Saturdays and Sundays) are not considered working days. If there are any public holidays that month, they have not been accounted for in this calculation. Please adjust accordingly for any holidays specific to your location or company policy.`;
+  }
+
   // Get function definition for OpenAI
   getFunctionDefinition() {
     return {
@@ -299,7 +348,7 @@ class CalculatorTool {
           },
           type: {
             type: 'string',
-            enum: ['general', 'vacation_calculation', 'percentage', 'prorated_calculation', 'time_calculation'],
+            enum: ['general', 'vacation_calculation', 'percentage', 'prorated_calculation', 'time_calculation', 'monthly_working_days'],
             description: 'Type of calculation to perform'
           },
           context: {
@@ -320,12 +369,14 @@ class CalculatorTool {
               hoursPerDay: { type: 'number', description: 'Hours per day' },
               daysPerWeek: { type: 'number', description: 'Days per week' },
               totalHours: { type: 'number', description: 'Total hours' },
-              totalDays: { type: 'number', description: 'Total days' }
+              totalDays: { type: 'number', description: 'Total days' },
+              month: { type: 'number', description: 'Month number (1-12) for monthly working days calculation' },
+              year: { type: 'number', description: 'Year for monthly working days calculation' }
             },
             description: 'Context for specialized calculations'
           }
         },
-        required: ['expression']
+        required: []
       }
     };
   }
